@@ -1699,7 +1699,7 @@
       const el = $('maint');
       if (!el || !m?.name) { $('maintainer')?.setAttribute('hidden', ''); return }
       const initials = m.name.split(' ').map(w => w[0]).slice(0, 2).join('');
-      const av = m.avatar ? `<img src="${xa(m.avatar)}" alt="${xa(m.name)}" />` : x(initials);
+      const av = m.avatar ? `<img src="${xa(m.avatar)}" alt="${xa(m.name)}" style="cursor:zoom-in" />` : x(initials);
       const links = [
         { k: 'telegram', l: 'Telegram' },
         { k: 'github', l: 'GitHub' },
@@ -1810,16 +1810,31 @@
         cap.textContent = shots[idx].label;
         lb.classList.add('open');
         document.body.style.overflow = 'hidden';
+        prv.style.display = shots.length > 1 ? '' : 'none';
+        nxt.style.display = shots.length > 1 ? '' : 'none';
         cls.focus();
       }
       function close() {
         lb.classList.remove('open');
         document.body.style.overflow = '';
-        document.querySelector(`.ss-btn[data-i="${idx}"]`)?.focus();
       }
       $('ss-grid')?.addEventListener('click', e => {
         const b = e.target.closest('.ss-btn');
         if (b) open(+b.dataset.i);
+      });
+      // Handler for avatar
+      $('maint')?.addEventListener('click', e => {
+        const av = e.target.closest('.avatar img');
+        if (av) {
+          img.src = av.src;
+          img.alt = av.alt;
+          cap.textContent = 'OUR BELOVED STARSTREAM';
+          lb.classList.add('open');
+          document.body.style.overflow = 'hidden';
+          prv.style.display = 'none';
+          nxt.style.display = 'none';
+          cls.focus();
+        }
       });
       cls?.addEventListener('click', close);
       prv?.addEventListener('click', () => open(idx - 1));
@@ -1828,8 +1843,8 @@
       document.addEventListener('keydown', e => {
         if (!lb.classList.contains('open')) return;
         if (e.key === 'Escape') close();
-        if (e.key === 'ArrowLeft') open(idx - 1);
-        if (e.key === 'ArrowRight') open(idx + 1);
+        if (e.key === 'ArrowLeft' && shots.length > 1) open(idx - 1);
+        if (e.key === 'ArrowRight' && shots.length > 1) open(idx + 1);
       });
     }
 
