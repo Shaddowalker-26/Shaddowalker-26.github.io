@@ -807,6 +807,13 @@
       border: 1px solid var(--bd);
       border-radius: var(--rl);
       overflow: hidden;
+      transition: border-color .3s;
+      will-change: height;
+      overflow-anchor: none;
+    }
+
+    .panel.animating {
+      pointer-events: none;
     }
 
     .panel-head {
@@ -858,7 +865,6 @@
 
     .panel-body {
       padding: 0 1.25rem 1.25rem;
-      animation: fadeUp .3s ease
     }
 
     @keyframes fadeUp {
@@ -1579,7 +1585,67 @@
       mobileNav();
       render();
       initDownloadConfirmation();
+      initAccordions();
     });
+
+    function initAccordions() {
+      const panels = document.querySelectorAll('.panel');
+      panels.forEach(panel => {
+        const summary = panel.querySelector('.panel-head');
+
+        summary.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (panel.classList.contains('animating')) return;
+
+          const isOpen = panel.hasAttribute('open');
+
+          if (isOpen) {
+            // Close
+            const startHeight = panel.offsetHeight;
+            const endHeight = summary.offsetHeight;
+
+            panel.classList.add('animating');
+            panel.style.height = `${startHeight}px`;
+
+            // Refined easing and slight duration tweak
+            const anim = panel.animate([
+              { height: `${startHeight}px`, opacity: 1 },
+              { height: `${endHeight}px`, opacity: 0.95 }
+            ], {
+              duration: 300,
+              easing: 'cubic-bezier(0.33, 1, 0.68, 1)'
+            });
+
+            anim.onfinish = () => {
+              panel.removeAttribute('open');
+              panel.classList.remove('animating');
+              panel.style.height = '';
+            };
+          } else {
+            // Open
+            const startHeight = summary.offsetHeight;
+            panel.style.height = `${startHeight}px`;
+            panel.setAttribute('open', '');
+            const endHeight = panel.scrollHeight; // use scrollHeight for accuracy
+
+            panel.classList.add('animating');
+
+            const anim = panel.animate([
+              { height: `${startHeight}px`, opacity: 0.95 },
+              { height: `${endHeight}px`, opacity: 1 }
+            ], {
+              duration: 400, // slightly longer for opening
+              easing: 'cubic-bezier(0.33, 1, 0.68, 1)'
+            });
+
+            anim.onfinish = () => {
+              panel.classList.remove('animating');
+              panel.style.height = '';
+            };
+          }
+        });
+      });
+    }
 
     function initDownloadConfirmation() {
       const conf = $('conf');
