@@ -693,16 +693,19 @@
     }
 
     .avatar:has(img) {
-      background: var(--s2);
-      border: 1px solid var(--bdhi);
+      background: none;
+      border: none;
+      box-shadow: none;
+      border-radius: 0;
+      overflow: visible;
     }
 
     .avatar img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      padding: 10px;
-      filter: brightness(0) invert(1);
+      object-fit: cover;
+      padding: 0;
+      /* filter: brightness(0) invert(1); */
     }
 
     .m-name {
@@ -1462,7 +1465,7 @@
       maintainer: {
         name: 'Starstream',
         role: 'Maintainer',
-        avatar: 'src/owner.png',   // image URL or leave empty for initials
+        avatar: 'src/owner.svg',   // image URL or leave empty for initials
         telegram: 'https://t.me/Iron_hide23',
         github: 'https://github.com/Shaddowalker-26',
       },
