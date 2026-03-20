@@ -1030,6 +1030,10 @@
       display: flex
     }
 
+    .lb-wrap.open {
+      animation: fadeIn .2s ease-out;
+    }
+
     .lb-center {
       display: flex;
       flex-direction: column;
@@ -1089,6 +1093,30 @@
 
       to {
         opacity: 1
+      }
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(20px) scale(.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-20px) scale(.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
       }
     }
 
@@ -1943,9 +1971,18 @@
       const cls = $('lb-close'), prv = $('lb-prev'), nxt = $('lb-next');
       if (!lb) return;
       let idx = 0;
-      function open(n) {
+      function open(n, direction = 'next') {
+        const isAlreadyOpen = lb.classList.contains('open');
         idx = (n + shots.length) % shots.length;
-        img.src = shots[idx].file; img.alt = shots[idx].label;
+
+        if (isAlreadyOpen) {
+          img.style.animation = 'none';
+          img.offsetHeight; // trigger reflow
+          img.style.animation = direction === 'next' ? 'slideInRight .3s ease-out' : 'slideInLeft .3s ease-out';
+        }
+
+        img.src = shots[idx].file;
+        img.alt = shots[idx].label;
         cap.textContent = shots[idx].label;
         lb.classList.add('open');
         document.body.style.overflow = 'hidden';
@@ -1995,14 +2032,14 @@
         }
       });
       cls?.addEventListener('click', close);
-      prv?.addEventListener('click', () => open(idx - 1));
-      nxt?.addEventListener('click', () => open(idx + 1));
+      prv?.addEventListener('click', () => open(idx - 1, 'prev'));
+      nxt?.addEventListener('click', () => open(idx + 1, 'next'));
       lb.addEventListener('click', e => { if (e.target === lb) close() });
       document.addEventListener('keydown', e => {
         if (!lb.classList.contains('open')) return;
         if (e.key === 'Escape') close();
-        if (e.key === 'ArrowLeft' && shots.length > 1) open(idx - 1);
-        if (e.key === 'ArrowRight' && shots.length > 1) open(idx + 1);
+        if (e.key === 'ArrowLeft' && shots.length > 1) open(idx - 1, 'prev');
+        if (e.key === 'ArrowRight' && shots.length > 1) open(idx + 1, 'next');
       });
     }
 
