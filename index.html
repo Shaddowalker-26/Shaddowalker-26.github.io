@@ -1082,6 +1082,16 @@
       }
     }
 
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
     .lb-wrap.closing {
       animation: fadeOut .2s ease-in forwards;
     }
@@ -1250,8 +1260,17 @@
       padding: 1.5rem;
     }
 
-    .conf-wrap.open {
+    .conf-wrap.open,
+    .conf-wrap.closing {
       display: flex;
+    }
+
+    .conf-wrap.open {
+      animation: fadeIn .2s ease-out;
+    }
+
+    .conf-wrap.closing {
+      animation: fadeOut .2s ease-in forwards;
     }
 
     .conf-box {
@@ -1276,6 +1295,22 @@
         opacity: 1;
         transform: scale(1) translateY(0);
       }
+    }
+
+    @keyframes confOut {
+      from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: scale(.9) translateY(10px);
+      }
+    }
+
+    .conf-wrap.closing .conf-box {
+      animation: confOut .2s ease-in forwards;
     }
 
     .conf-title {
@@ -1698,8 +1733,13 @@
       });
 
       const close = () => {
-        conf.classList.remove('open');
-        document.body.style.overflow = '';
+        if (!conf.classList.contains('open') || conf.classList.contains('closing')) return;
+        conf.classList.add('closing');
+        conf.addEventListener('animationend', (e) => {
+          if (e.target !== conf) return;
+          conf.classList.remove('open', 'closing');
+          document.body.style.overflow = '';
+        }, { once: true });
       };
 
       confirmBtn.addEventListener('click', () => {
