@@ -1438,25 +1438,44 @@
       position: fixed;
       inset: 0;
       z-index: 1000;
-      overflow-y: auto;
       background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      padding: 1rem;
     }
 
     .is-shared-sec .wrap {
       width: 100%;
       max-width: 800px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
       background: var(--bg);
       border: 1px solid var(--bdhi);
       border-radius: var(--rl);
-      padding: 2.5rem 1.5rem;
       box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7);
       animation: confIn .4s cubic-bezier(.34, 1.56, .64, 1);
       position: relative;
+    }
+
+    .shared-body {
+      padding: 2.5rem 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+      scrollbar-width: thin;
+      scrollbar-color: var(--mut) transparent;
+      border-radius: var(--rl);
+    }
+
+    .shared-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .shared-body::-webkit-scrollbar-thumb {
+      background: var(--mut);
+      border-radius: 6px;
     }
 
     .shared-close {
@@ -1482,6 +1501,22 @@
       background: var(--bd);
       color: var(--txt);
       transform: scale(1.1);
+    }
+
+    @media (max-width: 640px) {
+      .is-shared-sec {
+        padding: .75rem;
+      }
+      .shared-body {
+        padding: 1.5rem 1rem;
+      }
+      .shared-close {
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
@@ -1931,9 +1966,14 @@
         history.replaceState(null, null, ' ');
       });
 
+      // Create scrollable body
+      const contentArea = document.createElement('div');
+      contentArea.className = 'shared-body';
+      contentArea.appendChild(title);
+      contentArea.appendChild(clonedBody);
+      
       innerWrap.appendChild(closeBtn);
-      innerWrap.appendChild(title);
-      innerWrap.appendChild(clonedBody);
+      innerWrap.appendChild(contentArea);
       overlay.appendChild(innerWrap);
       
       document.body.appendChild(overlay);
